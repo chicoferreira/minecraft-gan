@@ -1,0 +1,7 @@
+name: RandomTeleport
+version: '1.0-SNAPSHOT'
+main: dev.chicoferreira.rtp.Main
+api-version: '1.21'
+authors: [ chicoferreira ]
+commands:
+  rtp:

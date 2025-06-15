@@ -1,3 +1,10 @@
 __pycache__
 .idea/
+.gradle/
+
+build/
+
 outputs
+
+generator_plugin/run
+generator_bot/screenshots/
