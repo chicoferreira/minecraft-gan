@@ -5,8 +5,9 @@ import pyautogui
 
 
 class MinecraftBot:
-    def __init__(self, screenshot_folder="screenshots"):
+    def __init__(self, screenshot_folder="screenshots", run_until=None):
         self.screenshot_folder = screenshot_folder
+        self.run_until = run_until
         self.minecraft_window = None
         self.setup_folders()
 
@@ -108,13 +109,18 @@ class MinecraftBot:
         try:
             while True:
                 current_id = self.get_next_id()
+
+                if self.run_until and current_id > self.run_until:
+                    print(f"Reached {self.run_until}. Stopping collection.")
+                    break
+
                 before_filename = f"{self.screenshot_folder}/before/before_{current_id:04d}.png"
                 after_filename = f"{self.screenshot_folder}/after/after_{current_id:04d}.png"
 
                 print(f"Taking screenshot {current_id}")
 
-                print(f"{current_id}: /rtp 3000")
-                self.send_command("/rtp 3000")
+                print(f"{current_id}: /rtp 4800")
+                self.send_command("/rtp 4800")
                 time.sleep(3)
                 print(f"{current_id}: Taking screenshot before")
                 self.take_screenshot(before_filename)
@@ -133,7 +139,7 @@ class MinecraftBot:
 
 def main():
     time.sleep(5)
-    bot = MinecraftBot()
+    bot = MinecraftBot(run_until=3600)
     bot.run_collection_loop()
 
 
