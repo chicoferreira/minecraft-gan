@@ -37,69 +37,24 @@ def show_image_pairs(dataloader, num_pairs=4, figsize=(12, 8)):
     plt.show()
 
 
-def plot_training_metrics(train_metrics, test_metrics, figsize=(15, 10)):
-    """Plot training and test metrics over epochs"""
-    fig, axes = plt.subplots(2, 2, figsize=figsize)
-
-    epochs = range(1, len(train_metrics) + 1)
-
-    # Generator Loss
-    axes[0, 0].plot(epochs, [m["generator_loss"] for m in train_metrics], "b-", label="Train")
-    axes[0, 0].plot(epochs, [m["test_generator_loss"] for m in test_metrics], "r-", label="Test")
-    axes[0, 0].set_title("Generator Loss")
-    axes[0, 0].set_xlabel("Epoch")
-    axes[0, 0].set_ylabel("Loss")
-    axes[0, 0].legend()
-    axes[0, 0].grid(True)
-
-    # Discriminator Loss
-    axes[0, 1].plot(epochs, [m["discriminator_loss"] for m in train_metrics], "b-", label="Train")
-    axes[0, 1].plot(epochs, [m["test_discriminator_loss"] for m in test_metrics], "r-", label="Test")
-    axes[0, 1].set_title("Discriminator Loss")
-    axes[0, 1].set_xlabel("Epoch")
-    axes[0, 1].set_ylabel("Loss")
-    axes[0, 1].legend()
-    axes[0, 1].grid(True)
-
-    # GAN Loss
-    axes[1, 0].plot(epochs, [m["gan_loss"] for m in train_metrics], "b-", label="Train")
-    axes[1, 0].plot(epochs, [m["test_gan_loss"] for m in test_metrics], "r-", label="Test")
-    axes[1, 0].set_title("GAN Loss")
-    axes[1, 0].set_xlabel("Epoch")
-    axes[1, 0].set_ylabel("Loss")
-    axes[1, 0].legend()
-    axes[1, 0].grid(True)
-
-    # L1 Loss
-    axes[1, 1].plot(epochs, [m["l1_loss"] for m in train_metrics], "b-", label="Train")
-    axes[1, 1].plot(epochs, [m["test_l1_loss"] for m in test_metrics], "r-", label="Test")
-    axes[1, 1].set_title("L1 Loss")
-    axes[1, 1].set_xlabel("Epoch")
-    axes[1, 1].set_ylabel("Loss")
-    axes[1, 1].legend()
-    axes[1, 1].grid(True)
-
-    plt.tight_layout()
-    plt.show()
-
-
 def show_test_results(generator, test_dataloader, device, num_samples=4):
     """Show results on test set"""
     print("Results on Test Set:")
-    
+
     # Get random samples from test dataset
     import random
+
     dataset_size = len(test_dataloader.dataset)
     random_indices = random.sample(range(dataset_size), min(num_samples, dataset_size))
-    
+
     x_samples = []
     y_samples = []
-    
+
     for idx in random_indices:
         sample = test_dataloader.dataset[idx]
         x_samples.append(sample["vanilla"])
         y_samples.append(sample["shader"])
-    
+
     x = torch.stack(x_samples).to(device)
     y = torch.stack(y_samples).to(device)
 

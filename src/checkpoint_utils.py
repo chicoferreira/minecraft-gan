@@ -2,7 +2,7 @@ import os
 import torch
 
 
-def save_checkpoint(epoch, G, D, g_opt, d_opt, train_metrics, test_metrics, checkpoint_dir="checkpoints"):
+def save_checkpoint(epoch, G, D, g_opt, d_opt, checkpoint_dir="checkpoints"):
     os.makedirs(checkpoint_dir, exist_ok=True)
 
     checkpoint_path = os.path.join(checkpoint_dir, f"checkpoint_epoch_{epoch + 1}.pth")
@@ -13,8 +13,6 @@ def save_checkpoint(epoch, G, D, g_opt, d_opt, train_metrics, test_metrics, chec
         "discriminator_state_dict": D.state_dict(),
         "generator_optimizer_state_dict": g_opt.state_dict(),
         "discriminator_optimizer_state_dict": d_opt.state_dict(),
-        "train_metrics": train_metrics,
-        "test_metrics": test_metrics,
     }
 
     torch.save(checkpoint, checkpoint_path)
@@ -33,12 +31,7 @@ def load_checkpoint(checkpoint, G, D, g_opt, d_opt, device, checkpoint_dir="chec
         g_opt.load_state_dict(checkpoint["generator_optimizer_state_dict"])
         d_opt.load_state_dict(checkpoint["discriminator_optimizer_state_dict"])
 
-        start_epoch = checkpoint["epoch"]
-        train_metrics = checkpoint["train_metrics"]
-        test_metrics = checkpoint["test_metrics"]
-
-        print(f"Checkpoint loaded. Resuming from epoch {start_epoch}")
-        return start_epoch, train_metrics, test_metrics
+        return checkpoint["epoch"]
     else:
         print("No checkpoint found. Starting from scratch.")
-        return 0, [], []
+        return 0
