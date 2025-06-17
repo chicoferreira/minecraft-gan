@@ -1,5 +1,6 @@
 import torch
 import matplotlib.pyplot as plt
+import random
 
 
 def denormalize(tensor):
@@ -42,8 +43,6 @@ def show_test_results(generator, test_dataloader, device, num_samples=4):
     print("Results on Test Set:")
 
     # Get random samples from test dataset
-    import random
-
     dataset_size = len(test_dataloader.dataset)
     random_indices = random.sample(range(dataset_size), min(num_samples, dataset_size))
 
@@ -84,5 +83,69 @@ def show_results(x, y, y_hat, n=4):
         for ax in axes[i]:
             ax.axis("off")
 
+    plt.tight_layout()
+    plt.show()
+
+
+def show_combined_results(models_dict, test_dataloader, device, num_samples=3):
+    """Show results from all models in a combined visualization"""
+    print("Comparing results from all loss configurations:")
+    
+    # Get test samples
+    dataset_size = len(test_dataloader.dataset)
+    random_indices = random.sample(range(dataset_size), min(num_samples, dataset_size))
+    
+    x_samples = []
+    y_samples = []
+    
+    for idx in random_indices:
+        sample = test_dataloader.dataset[idx]
+        x_samples.append(sample["vanilla"])
+        y_samples.append(sample["shader"])
+    
+    x = torch.stack(x_samples).to(device)
+    y = torch.stack(y_samples).to(device)
+    
+    # Generate results for all models
+    model_results = {}
+    for config_name, model in models_dict.items():
+        with torch.no_grad():
+            model.eval()
+            y_hat = model(x)
+            model_results[config_name] = y_hat.cpu()
+    
+    # Create combined visualization
+    x_cpu = x.cpu()
+    y_cpu = y.cpu()
+    
+    # Denormalize all images
+    x_display = (x_cpu + 1) / 2
+    y_display = (y_cpu + 1) / 2
+    
+    num_models = len(models_dict)
+    num_cols = num_models + 2  # vanilla + all models + target
+    
+    fig, axes = plt.subplots(num_samples, num_cols, figsize=(4 * num_cols, 4 * num_samples))
+    if num_samples == 1:
+        axes = axes.reshape(1, -1)
+    
+    for i in range(num_samples):
+        # Show vanilla (input)
+        axes[i, 0].imshow(x_display[i].permute(1, 2, 0))
+        axes[i, 0].set_title("Vanilla (Input)")
+        axes[i, 0].axis("off")
+        
+        # Show generated results for each model
+        for j, (config_name, result) in enumerate(model_results.items()):
+            result_display = (result[i] + 1) / 2
+            axes[i, j + 1].imshow(result_display.permute(1, 2, 0))
+            axes[i, j + 1].set_title(f"Generated ({config_name})")
+            axes[i, j + 1].axis("off")
+        
+        # Show target (shader)
+        axes[i, -1].imshow(y_display[i].permute(1, 2, 0))
+        axes[i, -1].set_title("Target (Shader)")
+        axes[i, -1].axis("off")
+    
     plt.tight_layout()
     plt.show()
