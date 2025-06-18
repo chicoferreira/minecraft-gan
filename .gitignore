@@ -6,7 +6,5 @@ build/
 
 outputs
 
-checkpoints/
-
 generator_plugin/run
 generator_bot/screenshots/
