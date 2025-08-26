@@ -1,4 +1,4 @@
-# Minecraft Shader GAN
+# Minecraft Shader GAN (Report)
 
 This project has the goal of transforming a Minecraft vanilla picture into a picture with shaders on it.
 
